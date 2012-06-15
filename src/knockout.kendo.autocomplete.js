@@ -89,7 +89,7 @@ ko.bindingHandlers.kendoAutoComplete = {
 		
 		$element.on('removing', function() {
 			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();
-			control.element.show().insertBefore(combobox.wrapper);
+			control.element.show().insertBefore(control.wrapper);
 			control.wrapper.remove();
 			control.element.removeData("kendoComboBox");
 		});
