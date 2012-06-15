@@ -46,19 +46,19 @@ ko.bindingHandlers.kendoAutoComplete = {
             }
         };
         var valueToSet = configuration.value;
-
+		var $element = $(element);
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
-                valueToSet.subscribe(function (value) {
+				valueToSet.subscribe(function (value) {
                     setValue(value);
                 });
                 valueToSet = valueToSet();
             }
         }
-
+		
         if (ko.isObservable(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
-            configuration.dataSource.subscribe(function (value) {
+			configuration.dataSource.subscribe(function (value) {
                 controlDataSource.cancelChanges();
                 for (var index = 0; index < value.length; index++) {
                     controlDataSource.add(value[index]);
@@ -73,7 +73,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             controlDataSource = configuration.dataSource;
         }
 
-        control = $(element).kendoAutoComplete({
+        control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
             enable: configuration.enable,
@@ -86,7 +86,14 @@ ko.bindingHandlers.kendoAutoComplete = {
             separator: configuration.separator,
             suggest: configuration.suggest
         }).data("kendoAutoComplete");
-
+		
+		$element.on('removing', function() {
+			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();
+			control.element.show().insertBefore(combobox.wrapper);
+			control.wrapper.remove();
+			control.element.removeData("kendoComboBox");
+		});
+		
         setValue(valueToSet);
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
