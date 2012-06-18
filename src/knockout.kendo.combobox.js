@@ -141,7 +141,6 @@ ko.bindingHandlers.kendoComboBox = {
 			control.bind("select", configuration.event.select);
 		}
 
-
 		var controlElement = $(control.element).parent();
 
 		for (var className in configuration.css) {
