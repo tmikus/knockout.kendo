@@ -334,7 +334,7 @@ ko.bindingHandlers.kendoDropDownList = {
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
                 if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
-                    control.value(controlDataSource.at(itemIndex));
+                    control.value(value);
                     return;
                 }
             }

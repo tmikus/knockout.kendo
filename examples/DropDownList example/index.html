@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>DropDownList example</title>
+		
+		<link rel="Stylesheet" type="text/css" href="../../libs/kendoui.complete.2012.1.515.trial/styles/kendo.common.min.css" />
+		<link rel="Stylesheet" type="text/css" href="../../libs/kendoui.complete.2012.1.515.trial/styles/kendo.silver.min.css" />
+		<script type="text/javascript" src="../../libs/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../../libs/knockout-2.1.0.js"></script>
+		<script type="text/javascript" src="../../libs/kendoui.complete.2012.1.515.trial/js/kendo.all.min.js"></script>
+		<script type="text/javascript" src="../../build/knockout.kendo.min.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<button data-bind="click: onAddNewButtonClick">Add new</button>
+			<!-- ko if: elements() && elements().length > 0 -->
+				<!-- ko foreach: elements -->
+				<div>
+					<input type="text" data-bind="kendoDropDownList: { dataSource: $parent.ddlElements, dataTextField: 'Text', dataValueField: 'Value', value: value }" />
+				</div>
+				<!-- /ko -->
+			<!-- /ko -->
+			<!-- ko if: !elements() || elements().length == 0 -->
+				<div>Brak elementów</div>
+			<!-- /ko -->
+		</div>
+		<script type="text/javascript">
+			var viewModel = {
+				ddlElements: ko.observableArray([
+					{ Text: "Element 1", Value: "1" },
+					{ Text: "Element 2", Value: "2" },
+					{ Text: "Element 3", Value: "3" }
+				]),
+				elements: ko.observableArray([])
+			};
+			viewModel.onAddNewButtonClick = function() {
+				viewModel.elements.push({ value: ko.observable(null) });
+			};
+			ko.applyBindings(viewModel, $("#container")[0]);
+		</script>
+	</body>
+</html>

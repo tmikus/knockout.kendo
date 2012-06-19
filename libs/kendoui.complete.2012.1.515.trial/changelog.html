@@ -1,0 +1,1104 @@
+
+
+
+
+
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Changelog for Kendo UI v2012.1.515</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font: .75em/1.5 Tahoma, sans-serif;
+        }
+
+        h2 {
+            margin: 1em 0 .3em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: .2em;
+        }
+
+        #page {
+            width: 50em;
+            margin: 0 auto 2em;
+            border-radius: 0 0 1em 1em;
+            box-shadow: 0 0 10px #ccc;
+            padding: 1em 2em 2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="page">
+        <h1>Release notes for Kendo UI v2012.1.515</h1>
+        
+    
+    
+        
+        
+        
+        <h2>Core</h2>
+
+        
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Enhance mobile platform detection</li>
+        
+    </ul>
+    
+
+        
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Selection is not cleared for items which are not visible</li>
+        
+    </ul>
+    
+
+
+        
+        
+        
+        <h3>MVVM</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Traverse parent observable objects when resolving bindings</li>
+        
+        <li>Support for setting autoBind option if bound to DataSource through MVVM</li>
+        
+        <li>Multiline JSON support in data attributes</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Cursor position is not persisted when value binding with update on keyup mode is used</li>
+        
+        <li>The attr binding cannot set HTML5 data attributes</li>
+        
+        <li>Cursor position is not persisted when value binding with update on keyup mode is used</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>DataSource</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>OData transport wraps the field name in tolower method to perform case insensitive filtering.</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Model is not marked as dirty during its Change event</li>
+        
+        <li>DataSource GetByUid does not work as expected when remote virtualization is enabled</li>
+        
+        <li>Deleted item are synced even after changes are canceled</li>
+        
+        <li>OData parameterMap must not append $format for json dataType</li>
+        
+        <li>OData orderby parameter should not be serialized if sort is empty list</li>
+        
+        <li>DataSource does not clear queued request on error</li>
+        
+        <li>DataSource GetByUid does not work as expected when remote virtualization is enabled</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Drag and Drop</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Mousedown is prevented on drag&amp;drop targets</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Globalization</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>toString method rounds the number depending on the custom numeric format.</li>
+        
+        <li>Improve custom numeric formatting.</li>
+        
+        <li>parseFloat method does not parse strings with percent symbol correctly.</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Popup</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Popup close animation effects are ignored</li>
+        
+        <li>Popup screen boundary detection now properly handles left and top fit overflow</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>FX</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>IE throws Access Denied when animating in a cross-domain iframe.</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Templates</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>#: field# syntax for HTML encoding in Kendo templates</li>
+        
+    </ul>
+    
+
+            
+    
+
+        
+        
+        
+        <h3>Validator</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Multiple validation messages are shown when target input name contains dots</li>
+        
+    </ul>
+    
+
+        
+    
+        
+        
+        
+        <h2>Web</h2>
+
+        
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Widget methods can be invoked via the jQuery plugin</li>
+        
+        <li>kendo.web.js and kendo.dataviz.js can be included simultaneously</li>
+        
+    </ul>
+    
+
+        
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Button styling targets all input type buttons in Firefox.</li>
+        
+        <li>IE throws Access Denied when animating in a cross-domain iframe.</li>
+        
+        <li>Widget binding triggers the change event before setting the value.</li>
+        
+        <li>Increase default drag hint z-index to overlay z-stacked windows</li>
+        
+    </ul>
+    
+
+
+        
+        
+        <h3>Upload</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Cookies are not sent when during async upload on Safari</li>
+        
+        <li>Selected files are uploaded after cancelling the select event</li>
+        
+        <li>User data set in the upload event is duplicated on retry. Note that user data can no longer be changed on retry</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Grid</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Grid column reordering</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Column resizing markers mis-positioned in hierarchy grid</li>
+        
+        <li>Grid navigatable does not work on numeric/date inputs in IE9</li>
+        
+        <li>Error is thrown when footer template is used and there is no data</li>
+        
+        <li>Setting virtual scroll declarative does not work as expected  </li>
+        
+        <li>Grid sets height to scrollable container when no height is specified</li>
+        
+        <li>DataItem method does not skip group footer rows</li>
+        
+        <li>iPad - grouping by two columns is not performed</li>
+        
+        <li>Keyboard navigation does not skip group footer rows</li>
+        
+        <li>Clicking on group footer row selects it</li>
+        
+        <li>Error is thrown when column with numeric textbox is focus during tabbing in IE8</li>
+        
+        <li>Dragging column from a child grid can only be dropped on the parent</li>
+        
+        <li>Editable grid does not pass the correct element to model's validate method.</li>
+        
+        <li>items method returns footer rows</li>
+        
+        <li>Grouping throws an error if page is zoomed</li>
+        
+        <li>Detail template expand state is not maintained if owner group is expanded</li>
+        
+        <li>Model is not passed as argument to the Save event during PopUp editing</li>
+        
+        <li>Grid horizontal scrolling does not move the header cells</li>
+        
+        <li>Editable grid does not pass the correct element to model's validate method.</li>
+        
+        <li>items method returns footer rows</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Window</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Introduce 'appendTo' option to simplify usage in ASP.NET WebForms</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Maximized windows with title are higher than the page</li>
+        
+        <li>Setting small font-size breaks titlebar buttons rendering</li>
+        
+        <li>Bottom border is invisible in IE7</li>
+        
+        <li>Content iframe gets removed if window is refreshed with local URL</li>
+        
+        <li>Modal Window remains below overlay after closing another modal Window</li>
+        
+        <li>toFront() increases the window z-index even if the window is topmost</li>
+        
+        <li>Modal Window remains below overlay after closing another modal Window</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>DatePicker</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Support for case sensitive searching</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Binding the widget to ViewModel sets its options to default ones.</li>
+        
+        <li>Calendar navigates to incorrect view if current date is 1.1.2012</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Slider</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Values() doesn't work with array of numbers.</li>
+        
+        <li>Slider tooltip format does not work.</li>
+        
+        <li>Tooltip of the slider is not visible when the slider is in the window.</li>
+        
+        <li>Calling enable() on an enabled slider causes unexpected behavior.</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>AutoComplete</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Widget lowers the filter value when perform case insensitive filtering.</li>
+        
+        <li>Support for case sensitive filtering</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Unable to select item in BM:IE9 DM:IE7 mode.</li>
+        
+        <li>AutoComplete's value method returns placeholder value in IE</li>
+        
+        <li>Widget moves the cursor to the begging on input focus.</li>
+        
+        <li>Popup width is incorrectly calculated for initially hidden widgets</li>
+        
+        <li>Change event was not raised on blur</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>ComboBox</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Widget lowers the filter value when perform case insensitive filtering.</li>
+        
+        <li>ComboBox copies the CSS classes to the wrapper element.</li>
+        
+        <li>Support for case sensitive filtering</li>
+        
+        <li>Support for case sensitive selection using the text method</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Unable to select item in BM:IE9 DM:IE7 mode.</li>
+        
+        <li>Widget moves the cursor to the begging on input focus.</li>
+        
+        <li>Popup width is incorrectly calculated for initially hidden widgets</li>
+        
+        <li>Multiple ComboBoxes with the same DataSource and autoBind=false render popup simultaiously when one of them is activated</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>DropDownList</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Empty DropDownList falls into an infinite loop when try to open it.</li>
+        
+        <li>Unable to select item in BM:IE9 DM:IE7 mode.</li>
+        
+        <li>DropDownList unbinds users' event handlers when disable the widget.</li>
+        
+        <li>Popup width is incorrectly calculated for initially hidden widgets</li>
+        
+        <li>Keyboard navigation of the DropDownList does not work after rebind.</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Editor</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Document all available editor methods</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Indenting plain text generates &lt;div&gt; element</li>
+        
+        <li>Disallowing clipboard access inserts BOM characters when pasting</li>
+        
+        <li>The 'encoded' property is not honored when triggering change event</li>
+        
+        <li>Empty paragraphs are unfocusable in Chrome/FF when initializing from textarea content</li>
+        
+        <li>Pasting content twice throws JS error in IE</li>
+        
+        <li>Support mobile devices with contentEditable besides iOS 5.x</li>
+        
+        <li>Cannot unbullet multiple lists within a table</li>
+        
+        <li>Changing list type of lists in tables causes loss of data</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>TreeView</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Observable objects cannot be used as node data when dynamically inserting nodes</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>DragStart event cannot be prevented</li>
+        
+        <li>Dynamically inserted nodes do not use the treeview template</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Menu</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Improve item creation from plain HTML</li>
+        
+        <li>Add popupCollision property</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Menu links are not navigating on mobile.</li>
+        
+        <li>Menu doesn't support content in dataSource</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>NumericTextBox</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Uppercase format letters are not supported</li>
+        
+        <li>Formatted values are not shown in iPad (iOS 5)</li>
+        
+    </ul>
+    
+
+        
+        
+        
+        <h3>TabStrip</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>TabStrip doesn't work on mobile device, when the mobile scroller script is not loaded</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>ListView</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Expose Pager change event</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Selectable and navigatable are not present in ListView options</li>
+        
+        <li>Constrain loading icon to the widget container</li>
+        
+    </ul>
+    
+
+        
+        
+        
+        <h3>PanelBar</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Add activate event, fired after expand complete</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>PanelBar doesn't handle well the expanded data property.</li>
+        
+        <li>PanelBar doesn't show content element and arrows with dataSource init.</li>
+        
+        <li>PanelBar not showing arrows for added items with content.</li>
+        
+        <li>Fire collapse event when expanding in single mode</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Splitter</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Focus of inputs inside panes is sometimes prevented</li>
+        
+    </ul>
+    
+
+        
+    
+        
+        
+        
+        <h2>DataViz</h2>
+
+        
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Widget methods can be invoked via the jQuery plugin</li>
+        
+        <li>kendo.web.js and kendo.dataviz.js can be included simultaneously</li>
+        
+    </ul>
+    
+
+        
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Gauge svg method throws an error</li>
+        
+    </ul>
+    
+
+
+        
+        
+        <h3>Chart</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>dataItem is now available in category axis label template</li>
+        
+        <li>Add an axisLabelClick event</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>verticalArea themes don't match area styling</li>
+        
+        <li>seriesHover is not triggered when moving over neighboring points in line/area series</li>
+        
+        <li>Clicking on a data point label text does not trigger a seriesClick event</li>
+        
+        <li>Gradient fills are rendered as black if base tag is present on the page</li>
+        
+        <li>Transparent background is rendered as black in Opera</li>
+        
+        <li>Error when binding to a field that is not defined in the data item</li>
+        
+        <li>Points with null X or Y value should be treated as null</li>
+        
+        <li>Background is set to black when specifying transparent (VML)</li>
+        
+        <li>dashType is not applied to scatter line series</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Radial Gauge</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Introduce scale.reverse configuration option</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Error when calling the svg() method</li>
+        
+        <li>animation.speed is not used for initial animation</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>Linear Gauge</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Introduce scale.reverse configuration option</li>
+        
+    </ul>
+    
+
+            
+    
+
+        
+        
+        
+    
+        
+        
+        
+        <h2>Mobile</h2>
+
+        
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Mobile Scroller scrollTo method</li>
+        
+        <li>Widget methods can be invoked via the jQuery plugin</li>
+        
+        <li>Implement application flag to determine if the Address Bar should be hidden</li>
+        
+    </ul>
+    
+
+        
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>BlackBerry skin too big for smartphones</li>
+        
+        <li>Icons are rendered as squares in BlackBerry 7.0</li>
+        
+        <li>ListView click event not firing when in scroller</li>
+        
+        <li>Remote View loading does not work in PhoneGap</li>
+        
+        <li>Kendo UI Mobile distribution missing MVVM component</li>
+        
+    </ul>
+    
+
+
+        
+        
+        
+        <h3>ListView</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Update custom data-icon documentation</li>
+        
+        <li>List item should create icons even if there are no links and checkboxes</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Add example and documentation for DetailButton.</li>
+        
+        <li>ListView does not pass button instance in click event</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>TabStrip</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Update custom data-icon documentation</li>
+        
+    </ul>
+    
+
+            
+    
+
+        
+        
+        <h3>Button</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Update custom data-icon documentation</li>
+        
+    </ul>
+    
+
+            
+    
+
+        
+        
+        <h3>ScrollView</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>ScrollView content method that allows dynamic content update</li>
+        
+        <li>Expose scrollview 'change' event</li>
+        
+    </ul>
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>ScrollView data-role=page attribute does not work for initially hidden ScrollView</li>
+        
+        <li>Calling scrollTo in viewShow event handler does not work</li>
+        
+    </ul>
+    
+
+        
+        
+        
+        <h3>Application</h3>
+
+            
+
+            
+    
+
+            
+    
+    <h4>What's fixed</h4>
+    <ul>
+        
+        <li>Application height collapses in PhoneGap for BlackBerry phones</li>
+        
+        <li>Input styling in mobile application affects all input elements (should affect only those in listview)</li>
+        
+        <li>Bug: Google Maps does not work in Kendo UI Mobile</li>
+        
+    </ul>
+    
+
+        
+        
+        <h3>View</h3>
+
+            
+
+            
+    
+    <h4>What's new</h4>
+    <ul>
+        
+        <li>Mobile Widgets can access its parent view via the `view()' method</li>
+        
+    </ul>
+    
+
+            
+    
+
+        
+    
+    </div>
+</body>
+</html>
