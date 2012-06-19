@@ -89,15 +89,14 @@ ko.bindingHandlers.kendoDropDownList = {
                     configuration.value(null);
                 }
 
-                var currentItem = e.item[0];
-                var itemsCollection = control.ul[0].children;
-                var itemsCount = itemsCollection.length;
-                for (var index = 0; index < itemsCount; index++) {
-                    if (currentItem == itemsCollection[index]) {
-                        configuration.value(this.value());
-                        break;
-                    }
+                configuration.value(accessDataItemValue(this.dataItem(e.item.index())));
+            });
+            control.bind("change", function (e) {
+                if (!e) {
+                    configuration.value(null);
                 }
+
+                configuration.value(accessDataItemValue(this.dataItem(this.selectedIndex)));
             });
         }
 

@@ -13,8 +13,8 @@ ko.bindingHandlers.kendoComboBox = {
             animation: false,
             css: {},
             dataSource: [],
-            dataTextField: null,
-            dataValueField: null,
+            dataTextField: "",
+            dataValueField: "",
             enable: true,
             event: {
                 change: null,
@@ -37,21 +37,13 @@ ko.bindingHandlers.kendoComboBox = {
         var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
         var control = null;
         var controlDataSource = null;
-        var setValue = function (value) {
-            var count = controlDataSource.total();
-            for (var index = 0; index < count; index++) {
-                if (accessDataItemValue(controlDataSource.at(index)) == value) {
-                    control.value(ko.utils.unwrapObservable(accessDataItemText(controlDataSource.at(index))));
-                    break;
-                }
-            }
-        };
         var valueToSet = configuration.value;
+        var rebindValue = function (value) { control.value(value ? value : valueToSet); };
 
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
                 valueToSet.subscribe(function (value) {
-                    setValue(value);
+                    control.value(valueToSet = value);
                 });
                 valueToSet = valueToSet();
             }
@@ -65,25 +57,13 @@ ko.bindingHandlers.kendoComboBox = {
         }
 
         if (ko.isObservable(configuration.dataSource)) {
-            controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource().map(function (val) {
-                if (ko.isObservable(accessDataItemText(val))) {
-                    var text = accessDataItemText(val)();
-                    if (configuration.dataTextField == null) {
-                        return text;
-                    } else {
-                        var obj = {};
-                        obj[configuration.dataTextField] = text;
-                        return $.extend({}, val, obj);
-                    }
-                }
-            })
-            });
+            controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
             configuration.dataSource.subscribe(function (value) {
                 controlDataSource.cancelChanges();
                 for (var index = 0; index < value.length; index++) {
                     controlDataSource.add(value[index]);
                 }
-                setValue(valueToSet);
+                rebindValue();
             });
         } else if ($.isArray(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource });
@@ -107,7 +87,7 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
-        setValue(valueToSet);
+        rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
             control.bind("select", function (e) {
@@ -115,34 +95,14 @@ ko.bindingHandlers.kendoComboBox = {
                     configuration.value(null);
                 }
 
-                var currentItem = e.item[0];
-                var itemsCollection = control.ul[0].children;
-                var itemsCount = itemsCollection.length;
-                for (var index = 0; index < itemsCount; index++) {
-                    if (currentItem == itemsCollection[index]) {
-                        configuration.value(accessDataItemValue(control._data()[index]));
-                        break;
-                    }
-                }
+                configuration.value(accessDataItemValue(this.dataItem(e.item.index())));
             });
             control.bind("change", function (e) {
                 if (!e) {
                     configuration.value(null);
                 }
 
-                var count = controlDataSource.total();
-                var text = control.text();
-                var wasSet = false;
-                for (var index = 0; index < count; index++) {
-                    if (accessDataItemText(controlDataSource.at(index)) == text) {
-                        configuration.value(ko.utils.unwrapObservable(accessDataItemValue(controlDataSource.at(index))));
-                        wasSet = true;
-                        break;
-                    }
-                }
-                if (!wasSet) {
-                    configuration.value(null);
-                }
+                configuration.value(accessDataItemValue(this.dataItem(this.selectedIndex)));
             });
         }
 

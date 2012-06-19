@@ -1,2 +1,1 @@
-rem anvil -b build.json
-uglifyjs -o build\knockout.kendo.js build\knockout.kendo.min.js
+anvil -b build.json
