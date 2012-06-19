@@ -75,7 +75,7 @@ ko.bindingHandlers.kendoDatePicker = {
 			control.bind("open", configuration.event.open);
 		}
 
-		var controlElement = $(control.element).parent();
+		var controlElement = $(control.element).parent().parent();
 
 		for (var className in configuration.css) {
 			var classValue = configuration.css[className];
