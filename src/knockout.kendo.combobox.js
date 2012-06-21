@@ -67,17 +67,36 @@ ko.bindingHandlers.kendoComboBox = {
             enable = configuration.enable();
         }
 
+		var unwrapDataSource = function (dataSource) {
+			var dataArray = [];
+			if (configuration.dataTextField || configuration.dataValueField) {
+				for (var index = 0; index < dataSource.length; index++) {
+					var dataItem = $.extend({}, dataSource[index]);
+					if (configuration.dataTextField && ko.isObservable(dataItem[configuration.dataTextField]))
+						dataItem[configuration.dataTextField] = dataItem[configuration.dataTextField]();
+					if (configuration.dataValueField && ko.isObservable(dataItem[configuration.dataValueField]))
+						dataItem[configuration.dataValueField] = dataItem[configuration.dataValueField]();
+					dataArray.push(dataItem);
+				}
+			}
+            else {
+				dataArray = dataSource;
+			}
+			return dataArray;
+		};
+		
         if (ko.isObservable(configuration.dataSource)) {
-            controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
+            controlDataSource = new kendo.data.DataSource({ data: unwrapDataSource(configuration.dataSource()) });
             configuration.dataSource.subscribe(function (value) {
                 controlDataSource.cancelChanges();
-                for (var index = 0; index < value.length; index++) {
-                    controlDataSource.add(value[index]);
-                }
+                var dataArray = unwrapDataSource(value);
+				for (var index = 0; index < dataArray.length; index++) {
+					controlDataSource.add(dataArray[index]);
+				}
                 rebindValue();
             });
         } else if ($.isArray(configuration.dataSource)) {
-            controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource });
+			controlDataSource = new kendo.data.DataSource({ data: unwrapDataSource(configuration.dataSource) });
         } else {
             // Assuming that this data source is native kendo data source.
             controlDataSource = configuration.dataSource;

@@ -32,8 +32,8 @@ ko.bindingHandlers.kendoAutoComplete = {
             value: null
         }, valueAccessor());
 
-        var accessDataItemText = configuration.dataTextField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataTextField]; };
-        var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
+        var accessDataItemText = configuration.dataTextField ? function (dataItem) { return dataItem[configuration.dataTextField]; } : function (dataItem) { return dataItem; };
+        var accessDataItemValue = configuration.dataValueField ? function (dataItem) { return dataItem[configuration.dataValueField]; } : function (dataItem) { return dataItem; };
         var control = null;
         var controlDataSource = null;
         var setValue = function (value) {
