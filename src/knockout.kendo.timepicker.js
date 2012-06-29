@@ -1,7 +1,7 @@
-ko.bindingHandlers.kendoDatePicker = {
+ko.bindingHandlers.kendoTimePicker = {
 	init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
 		/// <summary>
-		/// Method called right after binding ViewModel to element that has "kendoDatePicker" binding handler applied to it.
+		/// Method called right after binding ViewModel to element that has "kendoTimePicker" binding handler applied to it.
 		/// </summary>
 		/// <param name="element">The DOM element involved in this binding</param>
 		/// <param name="valueAccessor">A JavaScript function that you can call to get the current model property that is involved in this binding. Call this without passing any parameters (i.e., call valueAccessor()) to get the current model property value.</param>
@@ -9,19 +9,15 @@ ko.bindingHandlers.kendoDatePicker = {
 		/// <param name="viewModel">The view model object that was passed to ko.applyBindings. Inside a nested binding context, this parameter will be set to the current data item (e.g., inside a with: person binding, viewModel will be set to person).</param>
 
 		var configuration = $.extend({
-			animation: false,
 			css: {},
-			depth: "month",
 			enable: true,
 			event: {
-				change: null,
-				close: null,
-				open: null
+				change: null
 			},
-			format: "MM/dd/yyyy",
-			max: new Date(2099, 11, 31),
-			min: new Date(1900, 0, 1),
-			start: "month",
+			format: "h:mm tt",
+            interval: 30,
+			max: new Date(0, 0),
+			min: new Date(0, 0),
 			value: null
 		}, valueAccessor());
 
@@ -45,36 +41,26 @@ ko.bindingHandlers.kendoDatePicker = {
 			enable = configuration.enable();
 		}
 
-		control = $(element).kendoDatePicker({
-			animation: configuration.animation,
-			depth: configuration.depth,
-			format: configuration.format,
+		control = $(element).kendoTimePicker({
+		    format: configuration.format,
+            interval: configuration.interval,
 			max: configuration.max,
 			min: configuration.min,
-			start: configuration.start,
 			value: valueToSet
-		}).data("kendoDatePicker");
+		}).data("kendoTimePicker");
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {
 				if (!e) {
 					configuration.value(null);
 				}
-				var value = this.value();
-				var previousValue = configuration.value();
-				configuration.value(new Date(value.getFullYear(), value.getMonth(), value.getDate(),
-									previousValue ? previousValue.getHours() : 0, previousValue ? previousValue.getMinutes() : 0, previousValue ? previousValue.getSeconds() : 0));
+
+				configuration.value(this.value());
 			});
 		}
 
 		if (configuration.event.change != null) {
 			control.bind("change", configuration.event.change);
-		}
-		if (configuration.event.close != null) {
-			control.bind("close", configuration.event.close);
-		}
-		if (configuration.event.open != null) {
-			control.bind("open", configuration.event.open);
 		}
 
 		var controlElement = $(control.element).parent().parent();
