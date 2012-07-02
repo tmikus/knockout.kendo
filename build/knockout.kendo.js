@@ -272,14 +272,14 @@ ko.bindingHandlers.kendoComboBox = {
                     configuration.value(null);
                 }
 
-                configuration.value(accessDataItemValue(this.dataItem(e.item.index())));
+                configuration.value(e.item.index() == -1 ? null : accessDataItemValue(this.dataItem(e.item.index())));
             });
             control.bind("change", function (e) {
                 if (!e) {
                     configuration.value(null);
                 }
 
-                configuration.value(accessDataItemValue(this.dataItem(this.selectedIndex)));
+                configuration.value(this.selectedIndex == -1 ? null : accessDataItemValue(this.dataItem(this.selectedIndex)));
             });
         }
 
