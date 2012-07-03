@@ -15,12 +15,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             dataTextField: null,
             dataValueField: null,
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             filter: "startswith",
             height: 200,
             highlightFirst: true,
@@ -114,32 +109,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent(), configuration.css);
     }
 };

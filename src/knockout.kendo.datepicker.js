@@ -13,11 +13,7 @@ ko.bindingHandlers.kendoDatePicker = {
 			css: {},
 			depth: "month",
 			enable: true,
-			event: {
-				change: null,
-				close: null,
-				open: null
-			},
+			event: {},
 			format: "MM/dd/yyyy",
 			max: new Date(2099, 11, 31),
 			min: new Date(1900, 0, 1),
@@ -67,28 +63,7 @@ ko.bindingHandlers.kendoDatePicker = {
 			});
 		}
 
-		if (configuration.event.change != null) {
-			control.bind("change", configuration.event.change);
-		}
-		if (configuration.event.close != null) {
-			control.bind("close", configuration.event.close);
-		}
-		if (configuration.event.open != null) {
-			control.bind("open", configuration.event.open);
-		}
-
-		var controlElement = $(control.element).parent().parent();
-
-		for (var className in configuration.css) {
-			var classValue = configuration.css[className];
-			if (ko.isObservable(classValue)) {
-				classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-				classValue.subscribe(function (value) {
-					value ? controlElement.addClass(className) : controlElement.removeClass(className);
-				});
-			} else {
-				classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-			}
-		}
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent().parent(), configuration.css);
 	}
 };

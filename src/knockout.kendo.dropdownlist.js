@@ -16,12 +16,7 @@ ko.bindingHandlers.kendoDropDownList = {
             dataValueField: null,
             delay: 500,
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             height: 500,
             ignoreCase: true,
             index: 0,
@@ -111,31 +106,7 @@ ko.bindingHandlers.kendoDropDownList = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+        bindEventHandlers(control, configuration.event);
+        applyStyles($(control.element).parent().parent(), configuration.css);
     }
 };

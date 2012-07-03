@@ -16,16 +16,12 @@ ko.bindingHandlers.kendoComboBox = {
             dataTextField: "",
             dataValueField: "",
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             filter: "startswith",
             height: 500,
             highLightFirst: true,
             ignoreCase: true,
+			isBusy: ko.observable(false),
             minLength: 1,
             placeholder: "",
             separator: "",
@@ -117,6 +113,21 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
+		if (!ko.isObservable(configuration.isBusy))
+			throw "ComboBox'es IsBusy must be observable!";
+		
+		configuration.isBusy.subscribe(function (value) {
+			if (value) {
+				control.enable(false);
+				control._busy = null;
+				control._showBusy();
+			}
+			else {
+				control._hideBusy();
+				control.enable(true);
+			}
+		});
+		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
@@ -136,32 +147,7 @@ ko.bindingHandlers.kendoComboBox = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+        bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent(), configuration.css);
     }
 };

@@ -11,9 +11,7 @@ ko.bindingHandlers.kendoTimePicker = {
 		var configuration = $.extend({
 			css: {},
 			enable: true,
-			event: {
-				change: null
-			},
+			event: {},
 			format: "h:mm tt",
             interval: 30,
 			max: new Date(0, 0),
@@ -59,22 +57,7 @@ ko.bindingHandlers.kendoTimePicker = {
 			});
 		}
 
-		if (configuration.event.change != null) {
-			control.bind("change", configuration.event.change);
-		}
-
-		var controlElement = $(control.element).parent().parent();
-
-		for (var className in configuration.css) {
-			var classValue = configuration.css[className];
-			if (ko.isObservable(classValue)) {
-				classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-				classValue.subscribe(function (value) {
-					value ? controlElement.addClass(className) : controlElement.removeClass(className);
-				});
-			} else {
-				classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-			}
-		}
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent().parent(), configuration.css);
 	}
 };

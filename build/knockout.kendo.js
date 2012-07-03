@@ -1,5 +1,35 @@
 //knockout.kendo v0.1.0 | (c) 2012 Tomasz Mikuś | http://www.opensource.org/licenses/mit-license
-(function(ko, $, undefined) {
+(function(ko, $, undefined) {function applyStyles(control, cssConfiguration) {
+	/// <summary>
+	/// Binds classes to control.
+	/// </summary>
+	/// <param name="control">Instance of jQuery pointer to control.</param>
+	/// <param name="cssConfiguration">Css configuration.</param>
+	
+	for (var className in cssConfiguration) {
+		var classValue = cssConfiguration[className];
+		if (ko.isObservable(classValue)) {
+			classValue() ? control.addClass(className) : control.removeClass(className);
+			classValue.subscribe(function (value) {
+				value ? control.addClass(className) : control.removeClass(className);
+			});
+		} else {
+			classValue ? control.addClass(className) : control.removeClass(className);
+		}
+	}
+}
+
+function bindEventHandlers(control, events) {
+	/// <summary>
+	/// Binds all event handlers to specified control.
+	/// </summary>
+	/// <param name="control">Instance of control to which bind events.</param>
+	/// <param name="events">Object containing map of events to bind.</param>
+	
+	for (var event in events) {
+		control.bind(event, events[event])
+	}
+}
 ko.bindingHandlers.kendoAutoComplete = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
         /// <summary>
@@ -17,12 +47,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             dataTextField: null,
             dataValueField: null,
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             filter: "startswith",
             height: 200,
             highlightFirst: true,
@@ -116,33 +141,8 @@ ko.bindingHandlers.kendoAutoComplete = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent(), configuration.css);
     }
 };
 ko.bindingHandlers.kendoComboBox = {
@@ -163,16 +163,12 @@ ko.bindingHandlers.kendoComboBox = {
             dataTextField: "",
             dataValueField: "",
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             filter: "startswith",
             height: 500,
             highLightFirst: true,
             ignoreCase: true,
+			isBusy: ko.observable(false),
             minLength: 1,
             placeholder: "",
             separator: "",
@@ -264,6 +260,21 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
+		if (!ko.isObservable(configuration.isBusy))
+			throw "ComboBox'es IsBusy must be observable!";
+		
+		configuration.isBusy.subscribe(function (value) {
+			if (value) {
+				control.enable(false);
+				control._busy = null;
+				control._showBusy();
+			}
+			else {
+				control._hideBusy();
+				control.enable(true);
+			}
+		});
+		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
@@ -283,33 +294,8 @@ ko.bindingHandlers.kendoComboBox = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+        bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent(), configuration.css);
     }
 };
 ko.bindingHandlers.kendoDropDownList = {
@@ -330,12 +316,7 @@ ko.bindingHandlers.kendoDropDownList = {
             dataValueField: null,
             delay: 500,
             enable: true,
-            event: {
-                change: null,
-                close: null,
-                open: null,
-                select: null
-            },
+            event: {},
             height: 500,
             ignoreCase: true,
             index: 0,
@@ -425,32 +406,8 @@ ko.bindingHandlers.kendoDropDownList = {
             });
         }
 
-        if (configuration.event.change != null) {
-            control.bind("change", configuration.event.change);
-        }
-        if (configuration.event.close != null) {
-            control.bind("close", configuration.event.close);
-        }
-        if (configuration.event.open != null) {
-            control.bind("open", configuration.event.open);
-        }
-        if (configuration.event.select != null) {
-            control.bind("select", configuration.event.select);
-        }
-
-        var controlElement = $(control.element).parent();
-
-        for (var className in configuration.css) {
-            var classValue = configuration.css[className];
-            if (ko.isObservable(classValue)) {
-                classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-                classValue.subscribe(function (value) {
-                    value ? controlElement.addClass(className) : controlElement.removeClass(className);
-                });
-            } else {
-                classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-            }
-        }
+        bindEventHandlers(control, configuration.event);
+        applyStyles($(control.element).parent().parent(), configuration.css);
     }
 };
 ko.bindingHandlers.kendoDatePicker = {
@@ -468,11 +425,7 @@ ko.bindingHandlers.kendoDatePicker = {
 			css: {},
 			depth: "month",
 			enable: true,
-			event: {
-				change: null,
-				close: null,
-				open: null
-			},
+			event: {},
 			format: "MM/dd/yyyy",
 			max: new Date(2099, 11, 31),
 			min: new Date(1900, 0, 1),
@@ -522,29 +475,8 @@ ko.bindingHandlers.kendoDatePicker = {
 			});
 		}
 
-		if (configuration.event.change != null) {
-			control.bind("change", configuration.event.change);
-		}
-		if (configuration.event.close != null) {
-			control.bind("close", configuration.event.close);
-		}
-		if (configuration.event.open != null) {
-			control.bind("open", configuration.event.open);
-		}
-
-		var controlElement = $(control.element).parent().parent();
-
-		for (var className in configuration.css) {
-			var classValue = configuration.css[className];
-			if (ko.isObservable(classValue)) {
-				classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-				classValue.subscribe(function (value) {
-					value ? controlElement.addClass(className) : controlElement.removeClass(className);
-				});
-			} else {
-				classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-			}
-		}
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent().parent(), configuration.css);
 	}
 };
 ko.bindingHandlers.kendoTimePicker = {
@@ -560,9 +492,7 @@ ko.bindingHandlers.kendoTimePicker = {
 		var configuration = $.extend({
 			css: {},
 			enable: true,
-			event: {
-				change: null
-			},
+			event: {},
 			format: "h:mm tt",
             interval: 30,
 			max: new Date(0, 0),
@@ -608,22 +538,7 @@ ko.bindingHandlers.kendoTimePicker = {
 			});
 		}
 
-		if (configuration.event.change != null) {
-			control.bind("change", configuration.event.change);
-		}
-
-		var controlElement = $(control.element).parent().parent();
-
-		for (var className in configuration.css) {
-			var classValue = configuration.css[className];
-			if (ko.isObservable(classValue)) {
-				classValue() ? controlElement.addClass(className) : controlElement.removeClass(className);
-				classValue.subscribe(function (value) {
-					value ? controlElement.addClass(className) : controlElement.removeClass(className);
-				});
-			} else {
-				classValue ? controlElement.addClass(className) : controlElement.removeClass(className);
-			}
-		}
+		bindEventHandlers(control, configuration.event);
+		applyStyles($(control.element).parent().parent(), configuration.css);
 	}
 };})(ko, jQuery);
