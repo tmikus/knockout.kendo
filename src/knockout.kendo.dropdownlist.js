@@ -17,7 +17,7 @@ ko.bindingHandlers.kendoDropDownList = {
             delay: 500,
             enable: true,
             event: {},
-            height: 500,
+            height: 200,
             ignoreCase: true,
             index: 0,
             optionLabel: "",

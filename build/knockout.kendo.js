@@ -165,7 +165,7 @@ ko.bindingHandlers.kendoComboBox = {
             enable: true,
             event: {},
             filter: "startswith",
-            height: 500,
+            height: 200,
             highLightFirst: true,
             ignoreCase: true,
 			isBusy: ko.observable(false),
@@ -186,7 +186,7 @@ ko.bindingHandlers.kendoComboBox = {
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
                 if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
-                    control.value(controlDataSource.at(itemIndex));
+                    control.value(value);
                     return;
                 }
             }
@@ -317,7 +317,7 @@ ko.bindingHandlers.kendoDropDownList = {
             delay: 500,
             enable: true,
             event: {},
-            height: 500,
+            height: 200,
             ignoreCase: true,
             index: 0,
             optionLabel: "",
