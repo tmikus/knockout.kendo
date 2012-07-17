@@ -433,7 +433,7 @@ ko.bindingHandlers.kendoDropDownList = {
         }
 
         bindEventHandlers(control, configuration.event);
-        applyStyles($(control.element).parent().parent(), configuration.css);
+        applyStyles($(control.element).parent(), configuration.css);
     }
 };
 ko.bindingHandlers.kendoDatePicker = {
