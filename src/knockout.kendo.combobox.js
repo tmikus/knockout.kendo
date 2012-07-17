@@ -21,7 +21,7 @@ ko.bindingHandlers.kendoComboBox = {
             height: 200,
             highLightFirst: true,
             ignoreCase: true,
-			isBusy: ko.observable(false),
+			isBusy: null,
             minLength: 1,
             placeholder: "",
             separator: "",
@@ -114,20 +114,7 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
-		if (!ko.isObservable(configuration.isBusy))
-			throw "ComboBox'es IsBusy must be observable!";
-		
-		configuration.isBusy.subscribe(function (value) {
-			if (value) {
-				control.enable(false);
-				control._busy = null;
-				control._showBusy();
-			}
-			else {
-				control._hideBusy();
-				control.enable(true);
-			}
-		});
+		bindIsBusy(control, configuration);
 		
         rebindValue();
 

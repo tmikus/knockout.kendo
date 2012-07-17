@@ -29,3 +29,29 @@ function bindEventHandlers(control, events) {
 		control.bind(event, events[event])
 	}
 }
+
+function bindIsBusy(control, configuration) {
+	/// <summary>
+	/// Binds handling of "isBusy" property to control.
+	/// </summary>
+	/// <param name="control">Instance of kendo control to which bind "is busy" handling.</parma.
+	/// <param name="configuration">Configuration used for control's creation.</param>
+	
+	if (configuration.isBusy == null)
+		return;
+	
+	if (!ko.isObservable(configuration.isBusy))
+		throw "ComboBox'es IsBusy must be observable!";
+	
+	configuration.isBusy.subscribe(function (value) {
+		if (value) {
+			control.enable(false);
+			control._busy = null;
+			control._showBusy();
+		}
+		else {
+			control._hideBusy();
+			control.enable(true);
+		}
+	});
+}

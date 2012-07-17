@@ -50,6 +50,8 @@ ko.bindingHandlers.kendoDatePicker = {
 			start: configuration.start,
 			value: valueToSet
 		}).data("kendoDatePicker");
+		
+		control.enable(enable);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {

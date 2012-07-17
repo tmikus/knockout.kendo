@@ -68,10 +68,17 @@ ko.bindingHandlers.kendoAutoComplete = {
             controlDataSource = configuration.dataSource;
         }
 
+		var enable = configuration.enable;
+		if (ko.isObservable(enable)) {
+			enable.subscribe(function (newValue) {
+				control.enable(newValue);
+			});
+			enable = configuration.enable();
+		}
+
         control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
-            enable: configuration.enable,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,
@@ -81,6 +88,8 @@ ko.bindingHandlers.kendoAutoComplete = {
             separator: configuration.separator,
             suggest: configuration.suggest
         }).data("kendoAutoComplete");
+		
+		control.enable(enable);
 		
 		$element.on('removing', function() {
 			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();

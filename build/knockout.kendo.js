@@ -30,6 +30,32 @@ function bindEventHandlers(control, events) {
 		control.bind(event, events[event])
 	}
 }
+
+function bindIsBusy(control, configuration) {
+	/// <summary>
+	/// Binds handling of "isBusy" property to control.
+	/// </summary>
+	/// <param name="control">Instance of kendo control to which bind "is busy" handling.</parma.
+	/// <param name="configuration">Configuration used for control's creation.</param>
+	
+	if (configuration.isBusy == null)
+		return;
+	
+	if (!ko.isObservable(configuration.isBusy))
+		throw "ComboBox'es IsBusy must be observable!";
+	
+	configuration.isBusy.subscribe(function (value) {
+		if (value) {
+			control.enable(false);
+			control._busy = null;
+			control._showBusy();
+		}
+		else {
+			control._hideBusy();
+			control.enable(true);
+		}
+	});
+}
 ko.bindingHandlers.kendoAutoComplete = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
         /// <summary>
@@ -100,10 +126,17 @@ ko.bindingHandlers.kendoAutoComplete = {
             controlDataSource = configuration.dataSource;
         }
 
+		var enable = configuration.enable;
+		if (ko.isObservable(enable)) {
+			enable.subscribe(function (newValue) {
+				control.enable(newValue);
+			});
+			enable = configuration.enable();
+		}
+
         control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
-            enable: configuration.enable,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,
@@ -113,6 +146,8 @@ ko.bindingHandlers.kendoAutoComplete = {
             separator: configuration.separator,
             suggest: configuration.suggest
         }).data("kendoAutoComplete");
+		
+		control.enable(enable);
 		
 		$element.on('removing', function() {
 			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();
@@ -168,7 +203,7 @@ ko.bindingHandlers.kendoComboBox = {
             height: 200,
             highLightFirst: true,
             ignoreCase: true,
-			isBusy: ko.observable(false),
+			isBusy: null,
             minLength: 1,
             placeholder: "",
             separator: "",
@@ -186,7 +221,8 @@ ko.bindingHandlers.kendoComboBox = {
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
                 if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
-                    control.value(value);
+                    control.value(controlDataSource.at(itemIndex));
+                    control.text(accessDataItemText(controlDataSource.at(itemIndex)));
                     return;
                 }
             }
@@ -260,20 +296,7 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
-		if (!ko.isObservable(configuration.isBusy))
-			throw "ComboBox'es IsBusy must be observable!";
-		
-		configuration.isBusy.subscribe(function (value) {
-			if (value) {
-				control.enable(false);
-				control._busy = null;
-				control._showBusy();
-			}
-			else {
-				control._hideBusy();
-				control.enable(true);
-			}
-		});
+		bindIsBusy(control, configuration);
 		
         rebindValue();
 
@@ -319,6 +342,7 @@ ko.bindingHandlers.kendoDropDownList = {
             event: {},
             height: 200,
             ignoreCase: true,
+			isBusy: null,
             index: 0,
             optionLabel: "",
             value: null
@@ -387,6 +411,8 @@ ko.bindingHandlers.kendoDropDownList = {
             optionLabel: configuration.optionLabel
         }).data("kendoDropDownList");
 
+		bindIsBusy(control, configuration);
+		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
@@ -462,6 +488,8 @@ ko.bindingHandlers.kendoDatePicker = {
 			start: configuration.start,
 			value: valueToSet
 		}).data("kendoDatePicker");
+		
+		control.enable(enable);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {

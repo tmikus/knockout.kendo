@@ -19,6 +19,7 @@ ko.bindingHandlers.kendoDropDownList = {
             event: {},
             height: 200,
             ignoreCase: true,
+			isBusy: null,
             index: 0,
             optionLabel: "",
             value: null
@@ -87,6 +88,8 @@ ko.bindingHandlers.kendoDropDownList = {
             optionLabel: configuration.optionLabel
         }).data("kendoDropDownList");
 
+		bindIsBusy(control, configuration);
+		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
