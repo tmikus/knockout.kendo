@@ -56,13 +56,6 @@ ko.bindingHandlers.kendoComboBox = {
                 valueToSet = valueToSet();
             }
         }
-        var enable = configuration.enable;
-        if (ko.isObservable(enable)) {
-            enable.subscribe(function (newValue) {
-                control.enable(newValue);
-            });
-            enable = configuration.enable();
-        }
 
 		var unwrapDataSource = function (dataSource) {
 			var dataArray = [];
@@ -103,7 +96,6 @@ ko.bindingHandlers.kendoComboBox = {
             animation: configuration.animation,
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
-            enable: enable,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,
@@ -114,6 +106,7 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
+		bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();

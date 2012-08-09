@@ -31,14 +31,6 @@ ko.bindingHandlers.kendoTimePicker = {
 			}
 		}
 		
-		var enable = configuration.enable;
-		if (ko.isObservable(enable)) {
-			enable.subscribe(function (newValue) {
-				control.enable(newValue);
-			});
-			enable = configuration.enable();
-		}
-
 		control = $(element).kendoTimePicker({
 		    format: configuration.format,
             interval: configuration.interval,
@@ -46,6 +38,8 @@ ko.bindingHandlers.kendoTimePicker = {
 			min: configuration.min,
 			value: valueToSet
 		}).data("kendoTimePicker");
+		
+		bindEnable(control, configuration);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {

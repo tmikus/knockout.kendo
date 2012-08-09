@@ -30,6 +30,24 @@ function bindEventHandlers(control, events) {
 	}
 }
 
+function bindEnable(control, configuration) {
+	/// <summary>
+	/// Binds handling of "enable" property to control.
+	/// </summary>
+	/// <param name="control">Instance of kendo control to which bind "enable" handling.</parma.
+	/// <param name="configuration">Configuration used for control's creation.</param>
+	
+	var enable = configuration.enable;
+	if (ko.isObservable(enable)) {
+		enable.subscribe(function (newValue) {
+			control.enable(newValue);
+		});
+		enable = configuration.enable();
+	}
+	
+	control.enable(enable);
+}
+
 function bindIsBusy(control, configuration) {
 	/// <summary>
 	/// Binds handling of "isBusy" property to control.

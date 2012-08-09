@@ -32,14 +32,6 @@ ko.bindingHandlers.kendoDatePicker = {
 				valueToSet = valueToSet();
 			}
 		}
-		
-		var enable = configuration.enable;
-		if (ko.isObservable(enable)) {
-			enable.subscribe(function (newValue) {
-				control.enable(newValue);
-			});
-			enable = configuration.enable();
-		}
 
 		control = $(element).kendoDatePicker({
 			animation: configuration.animation,
@@ -60,10 +52,18 @@ ko.bindingHandlers.kendoDatePicker = {
 						$(this).toggleClass("k-state-hover", e.type == "touchstart");
 					})
 					.delegate(selector, "touchend", $.proxy(calendar._click, calendar));
+			selector = ".k-header > .k-link";
+			calendar.element
+					.undelegate(selector, "touchstart touchend")
+					.delegate(selector, "touchstart touchend", function (e) {
+						$(this).toggleClass("k-state-hover", e.type == "touchstart");
+					})
+					.delegate(selector, "touchend", function (e) {
+						$(this).click();
+					});
 		}
 
-		
-		control.enable(enable);
+		bindEnable(control, configuration);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {

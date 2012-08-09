@@ -31,6 +31,24 @@ function bindEventHandlers(control, events) {
 	}
 }
 
+function bindEnable(control, configuration) {
+	/// <summary>
+	/// Binds handling of "enable" property to control.
+	/// </summary>
+	/// <param name="control">Instance of kendo control to which bind "enable" handling.</parma.
+	/// <param name="configuration">Configuration used for control's creation.</param>
+	
+	var enable = configuration.enable;
+	if (ko.isObservable(enable)) {
+		enable.subscribe(function (newValue) {
+			control.enable(newValue);
+		});
+		enable = configuration.enable();
+	}
+	
+	control.enable(enable);
+}
+
 function bindIsBusy(control, configuration) {
 	/// <summary>
 	/// Binds handling of "isBusy" property to control.
@@ -98,20 +116,27 @@ ko.bindingHandlers.kendoAutoComplete = {
                 }
             }
         };
+		var valueSubscription = null;
         var valueToSet = configuration.value;
 		var $element = $(element);
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
-				valueToSet.subscribe(function (value) {
+				if (valueToSet.kendoAutoCompleteSubscription)
+					valueToSet.kendoAutoCompleteSubscription.dispose();
+				valueSubscription = valueToSet.kendoAutoCompleteSubscription = valueToSet.subscribe(function (value) {
                     setValue(value);
                 });
                 valueToSet = valueToSet();
             }
         }
 		
+		var dataSourceSubscription = null;
         if (ko.isObservable(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
-			configuration.dataSource.subscribe(function (value) {
+			if (configuration.dataSource.kendoAutoCompleteSubscription)
+				configuration.dataSource.kendoAutoCompleteSubscription.dispose();
+				
+			dataSourceSubscription = configuration.dataSource.kendoAutoCompleteSubscription = configuration.dataSource.subscribe(function (value) {
                 controlDataSource.cancelChanges();
                 for (var index = 0; index < value.length; index++) {
                     controlDataSource.add(value[index]);
@@ -126,14 +151,17 @@ ko.bindingHandlers.kendoAutoComplete = {
             controlDataSource = configuration.dataSource;
         }
 
-		var enable = configuration.enable;
-		if (ko.isObservable(enable)) {
-			enable.subscribe(function (newValue) {
-				control.enable(newValue);
-			});
-			enable = configuration.enable();
-		}
-
+		var disposeAutoComplete = function (control) {
+			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();
+			control.element.show().insertBefore(control.wrapper);
+			control.wrapper.remove();
+			control.element.removeData("kendoComboBox");
+			if (dataSourceSubscription)
+				dataSourceSubscription.dispose();
+			if (valueSubscription)
+				valueSubscription.dispose();
+		};
+		
         control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
@@ -147,13 +175,10 @@ ko.bindingHandlers.kendoAutoComplete = {
             suggest: configuration.suggest
         }).data("kendoAutoComplete");
 		
-		control.enable(enable);
+		bindEnable(control, configuration);
 		
 		$element.on('removing', function() {
-			(control.popup.wrapper[0] ? control.popup.wrapper : control.popup.element).remove();
-			control.element.show().insertBefore(control.wrapper);
-			control.wrapper.remove();
-			control.element.removeData("kendoComboBox");
+			disposeAutoComplete(control);
 		});
 		
         setValue(valueToSet);
@@ -238,13 +263,6 @@ ko.bindingHandlers.kendoComboBox = {
                 valueToSet = valueToSet();
             }
         }
-        var enable = configuration.enable;
-        if (ko.isObservable(enable)) {
-            enable.subscribe(function (newValue) {
-                control.enable(newValue);
-            });
-            enable = configuration.enable();
-        }
 
 		var unwrapDataSource = function (dataSource) {
 			var dataArray = [];
@@ -285,7 +303,6 @@ ko.bindingHandlers.kendoComboBox = {
             animation: configuration.animation,
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
-            enable: enable,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,
@@ -296,6 +313,7 @@ ko.bindingHandlers.kendoComboBox = {
             suggest: configuration.suggest
         }).data("kendoComboBox");
 
+		bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();
@@ -374,13 +392,6 @@ ko.bindingHandlers.kendoDropDownList = {
                 valueToSet = valueToSet();
             }
         }
-        var enable = configuration.enable;
-        if (ko.isObservable(enable)) {
-            enable.subscribe(function (newValue) {
-                control.enable(newValue);
-            });
-            enable = enable();
-        }
 
         if (ko.isObservable(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
@@ -404,13 +415,13 @@ ko.bindingHandlers.kendoDropDownList = {
             dataTextField: configuration.dataTextField,
             dataValueField: configuration.dataValueField,
             delay: configuration.delay,
-            enable: enable,
             height: configuration.height,
             ignoreCase: configuration.ignoreCase,
             index: configuration.index,
             optionLabel: configuration.optionLabel
         }).data("kendoDropDownList");
 
+		bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();
@@ -470,14 +481,6 @@ ko.bindingHandlers.kendoDatePicker = {
 				valueToSet = valueToSet();
 			}
 		}
-		
-		var enable = configuration.enable;
-		if (ko.isObservable(enable)) {
-			enable.subscribe(function (newValue) {
-				control.enable(newValue);
-			});
-			enable = configuration.enable();
-		}
 
 		control = $(element).kendoDatePicker({
 			animation: configuration.animation,
@@ -498,10 +501,18 @@ ko.bindingHandlers.kendoDatePicker = {
 						$(this).toggleClass("k-state-hover", e.type == "touchstart");
 					})
 					.delegate(selector, "touchend", $.proxy(calendar._click, calendar));
+			selector = ".k-header > .k-link";
+			calendar.element
+					.undelegate(selector, "touchstart touchend")
+					.delegate(selector, "touchstart touchend", function (e) {
+						$(this).toggleClass("k-state-hover", e.type == "touchstart");
+					})
+					.delegate(selector, "touchend", function (e) {
+						$(this).click();
+					});
 		}
 
-		
-		control.enable(enable);
+		bindEnable(control, configuration);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {
@@ -552,14 +563,6 @@ ko.bindingHandlers.kendoTimePicker = {
 			}
 		}
 		
-		var enable = configuration.enable;
-		if (ko.isObservable(enable)) {
-			enable.subscribe(function (newValue) {
-				control.enable(newValue);
-			});
-			enable = configuration.enable();
-		}
-
 		control = $(element).kendoTimePicker({
 		    format: configuration.format,
             interval: configuration.interval,
@@ -567,6 +570,8 @@ ko.bindingHandlers.kendoTimePicker = {
 			min: configuration.min,
 			value: valueToSet
 		}).data("kendoTimePicker");
+		
+		bindEnable(control, configuration);
 
 		if (configuration.value != null && ko.isObservable(configuration.value)) {
 			control.bind("change", function (e) {

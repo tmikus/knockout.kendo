@@ -51,13 +51,6 @@ ko.bindingHandlers.kendoDropDownList = {
                 valueToSet = valueToSet();
             }
         }
-        var enable = configuration.enable;
-        if (ko.isObservable(enable)) {
-            enable.subscribe(function (newValue) {
-                control.enable(newValue);
-            });
-            enable = enable();
-        }
 
         if (ko.isObservable(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource() });
@@ -81,13 +74,13 @@ ko.bindingHandlers.kendoDropDownList = {
             dataTextField: configuration.dataTextField,
             dataValueField: configuration.dataValueField,
             delay: configuration.delay,
-            enable: enable,
             height: configuration.height,
             ignoreCase: configuration.ignoreCase,
             index: configuration.index,
             optionLabel: configuration.optionLabel
         }).data("kendoDropDownList");
 
+		bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();
