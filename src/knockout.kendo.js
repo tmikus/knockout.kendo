@@ -4,3 +4,4 @@
 //import("knockout.kendo.dropdownlist.js");
 //import("knockout.kendo.datepicker.js");
 //import("knockout.kendo.timepicker.js");
+//import("knockout.kendo.numericTextBox.js");

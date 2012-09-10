@@ -11,7 +11,7 @@ ko.bindingHandlers.kendoDropDownList = {
         var configuration = $.extend({
             animation: false,
             css: {},
-            dataSource: [],
+            dataSource: null,
             dataTextField: null,
             dataValueField: null,
             delay: 500,
@@ -30,17 +30,24 @@ ko.bindingHandlers.kendoDropDownList = {
         var control = null;
         var controlDataSource = null;
         var valueToSet = configuration.value;
-        var rebindValue = function (value) {
-            value = value ? value : valueToSet
-            var total = controlDataSource.total();
-            for (var itemIndex = 0; itemIndex < total; itemIndex++) {
-                if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
-                    control.value(value);
-                    return;
-                }
-            }
-            control.value(null);
-        };
+        var rebindValue = null
+		if (configuration.dataSource) {
+			rebindValue = function (value) {
+				value = value ? value : valueToSet
+				var total = controlDataSource.total();
+				for (var itemIndex = 0; itemIndex < total; itemIndex++) {
+					if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
+						control.value(value);
+						return;
+					}
+				}
+				control.value(null);
+			};
+		} else {
+			rebindValue = function (value) {
+				control.value(value ? value : valueToSet);
+			};
+		}
 
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
@@ -63,43 +70,71 @@ ko.bindingHandlers.kendoDropDownList = {
             });
         } else if ($.isArray(configuration.dataSource)) {
             controlDataSource = new kendo.data.DataSource({ data: configuration.dataSource });
-        } else {
+        } else if (configuration.dataSource) {
             // Assuming that this data source is native kendo data source.
             controlDataSource = configuration.dataSource;
         }
 
-        control = $(element).kendoDropDownList({
-            animation: configuration.animation,
-            dataSource: controlDataSource,
-            dataTextField: configuration.dataTextField,
-            dataValueField: configuration.dataValueField,
-            delay: configuration.delay,
-            height: configuration.height,
-            ignoreCase: configuration.ignoreCase,
-            index: configuration.index,
-            optionLabel: configuration.optionLabel
-        }).data("kendoDropDownList");
+		if (controlDataSource) {
+			control = $(element).kendoDropDownList({
+				animation: configuration.animation,
+				dataSource: controlDataSource,
+				dataTextField: configuration.dataTextField,
+				dataValueField: configuration.dataValueField,
+				delay: configuration.delay,
+				height: configuration.height,
+				ignoreCase: configuration.ignoreCase,
+				index: configuration.index,
+				optionLabel: configuration.optionLabel
+			}).data("kendoDropDownList");
+			
+			rebindValue();
+		} else {
+			control = $(element).kendoDropDownList({
+				animation: configuration.animation,
+				delay: configuration.delay,
+				height: configuration.height,
+				ignoreCase: configuration.ignoreCase,
+				index: configuration.index,
+				optionLabel: configuration.optionLabel
+			}).data("kendoDropDownList");
+		}
 
 		bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
-		
-        rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
-            control.bind("select", function (e) {
-                if (!e) {
-                    configuration.value(null);
-                }
+			if (configuration.dataSource) {
+				control.bind("select", function (e) {
+					if (!e) {
+						configuration.value(null);
+					}
 
-                configuration.value(accessDataItemValue(this.dataItem(e.item.index())));
-            });
-            control.bind("change", function (e) {
-                if (!e) {
-                    configuration.value(null);
-                }
+					configuration.value(accessDataItemValue(this.dataItem(e.item.index())));
+				});
+				control.bind("change", function (e) {
+					if (!e) {
+						configuration.value(null);
+					}
 
-                configuration.value(accessDataItemValue(this.dataItem(this.selectedIndex)));
-            });
+					configuration.value(accessDataItemValue(this.dataItem(this.selectedIndex)));
+				});
+			} else {
+				control.bind("select", function (e) {
+					if (!e) {
+						configuration.value(null);
+					}
+
+					configuration.value(this.value());
+				});
+				control.bind("change", function (e) {
+					if (!e) {
+						configuration.value(null);
+					}
+
+					configuration.value(this.value());
+				});
+			}
         }
 
         bindEventHandlers(control, configuration.event);
