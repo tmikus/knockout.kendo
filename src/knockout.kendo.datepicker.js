@@ -72,7 +72,10 @@ ko.bindingHandlers.kendoDatePicker = {
 				}
 				var value = this.value();
 				var previousValue = configuration.value();
-				configuration.value(new Date(value.getFullYear(), value.getMonth(), value.getDate(),
+				if (value == null)
+					configuration.value(null)
+				else
+					configuration.value(new Date(value.getFullYear(), value.getMonth(), value.getDate(),
 									previousValue ? previousValue.getHours() : 0, previousValue ? previousValue.getMinutes() : 0, previousValue ? previousValue.getSeconds() : 0));
 			});
 		}
