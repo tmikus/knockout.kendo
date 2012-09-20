@@ -123,6 +123,9 @@ ko.bindingHandlers.kendoAutoComplete = {
                     }
                 }
             });
+            configuration.value.subscribe(function (value) {
+                control.value(value);
+            });
         }
 
 		bindEventHandlers(control, configuration.event);
