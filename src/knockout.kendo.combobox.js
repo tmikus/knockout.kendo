@@ -9,33 +9,19 @@ ko.bindingHandlers.kendoComboBox = {
         /// <param name="allBindingsAccessor"> A JavaScript function that you can call to get all the model properties bound to this DOM element. Like valueAccessor, call it without any parameters to get the current bound model properties.</param>
         /// <param name="viewModel">The view model object that was passed to ko.applyBindings. Inside a nested binding context, this parameter will be set to the current data item (e.g., inside a with: person binding, viewModel will be set to person).</param>
 
-        var configuration = $.extend({
-            animation: false,
-            css: {},
-            dataSource: [],
-            dataTextField: "",
-            dataValueField: "",
-            enable: true,
-            event: {},
-            filter: "startswith",
-            height: 200,
-            highLightFirst: true,
-            ignoreCase: true,
-			isBusy: null,
-            minLength: 1,
-            placeholder: "",
-            separator: "",
-            suggest: false,
-            value: null
-        }, valueAccessor());
+        var configuration = valueAccessor();
 
-        var accessDataItemText = configuration.dataTextField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataTextField]; };
-        var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
+        var accessDataItemText = !configuration.dataTextField
+                                 ? function (dataItem) { return dataItem; }
+                                 : function (dataItem) { return dataItem[configuration.dataTextField]; };
+        var accessDataItemValue = !configuration.dataValueField
+                                  ? function (dataItem) { return dataItem; }
+                                  : function (dataItem) { return dataItem[configuration.dataValueField]; };
         var control = null;
         var controlDataSource = null;
         var valueToSet = configuration.value;
         var rebindValue = function (value) {
-            value = value ? value : valueToSet
+            value = value ? value : valueToSet;
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
                 if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
@@ -92,37 +78,31 @@ ko.bindingHandlers.kendoComboBox = {
             controlDataSource = configuration.dataSource;
         }
 
-        control = $(element).kendoComboBox({
-            animation: configuration.animation,
-            dataSource: controlDataSource,
-            dataTextField: configuration.dataTextField,
-            filter: configuration.filter,
-            height: configuration.height,
-            highlightFirst: configuration.highlightFirst,
-            ignoreCase: configuration.ignoreCase,
-            minLength: configuration.minLength,
-            placeholder: configuration.placeholder,
-            separator: configuration.separator,
-            suggest: configuration.suggest
-        }).data("kendoComboBox");
+        configuration.dataSource = controlDataSource;
 
-		bindEnable(control, configuration);
+        if (configuration.enable != undefined && configuration.enable != null) {
+            configuration.enable = ko.utils.unwrapObservable(configuration.enable);
+        }
+
+        control = $(element).kendoComboBox($.extend({}, configuration, {
+            value: null
+        })).data("kendoComboBox");
+
+		//bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
             control.bind("select", function (e) {
-                if (!e) {
+                if (!e)
                     configuration.value(null);
-                }
 
                 configuration.value(e.item.index() == -1 ? null : accessDataItemValue(this.dataItem(e.item.index())));
             });
             control.bind("change", function (e) {
-                if (!e) {
+                if (!e)
                     configuration.value(null);
-                }
 
                 configuration.value(this.selectedIndex == -1 ? null : accessDataItemValue(this.dataItem(this.selectedIndex)));
             });
@@ -130,5 +110,13 @@ ko.bindingHandlers.kendoComboBox = {
 
         bindEventHandlers(control, configuration.event);
 		applyStyles($(control.element).parent(), configuration.css);
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var configuration = valueAccessor();
+        var control = $(element).data("kendoComboBox");
+
+        if (configuration.enable != undefined && configuration.enable != null) {
+            control.enable(ko.utils.unwrapObservable(configuration.enable));
+        }
     }
 };

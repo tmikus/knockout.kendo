@@ -14,6 +14,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             dataSource: [],
             dataTextField: null,
             dataValueField: null,
+            delay: 200,
             enable: true,
             event: {},
             filter: "startswith",
@@ -32,6 +33,10 @@ ko.bindingHandlers.kendoAutoComplete = {
         var control = null;
         var controlDataSource = null;
         var setValue = function (value) {
+            if (!value || value == '') {
+                control.value(null);
+                return;
+            }
             var count = controlDataSource.total();
             for (var index = 0; index < count; index++) {
                 if (accessDataItemValue(controlDataSource.at(index)) == value) {
@@ -73,6 +78,9 @@ ko.bindingHandlers.kendoAutoComplete = {
         } else {
             // Assuming that this data source is native kendo data source.
             controlDataSource = configuration.dataSource;
+            controlDataSource.bind("requestEnd", function () {
+                setTimeout(function() { control.popup.open(); }, 0);
+            });
         }
 
 		var disposeAutoComplete = function (control) {
@@ -89,6 +97,7 @@ ko.bindingHandlers.kendoAutoComplete = {
         control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
+            delay: configuration.delay,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,

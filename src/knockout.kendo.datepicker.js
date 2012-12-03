@@ -42,26 +42,6 @@ ko.bindingHandlers.kendoDatePicker = {
 			start: configuration.start,
 			value: valueToSet
 		}).data("kendoDatePicker");
-		
-		if (kendo.support.touch) {
-			var selector = "td:has(.k-link)";
-			var calendar = control.dateView.calendar;
-			calendar.element
-					.undelegate(selector, "touchstart touchend")
-					.delegate(selector, "touchstart touchend", function (e) {
-						$(this).toggleClass("k-state-hover", e.type == "touchstart");
-					})
-					.delegate(selector, "touchend", $.proxy(calendar._click, calendar));
-			selector = ".k-header > .k-link";
-			calendar.element
-					.undelegate(selector, "touchstart touchend")
-					.delegate(selector, "touchstart touchend", function (e) {
-						$(this).toggleClass("k-state-hover", e.type == "touchstart");
-					})
-					.delegate(selector, "touchend", function (e) {
-						$(this).click();
-					});
-		}
 
 		bindEnable(control, configuration);
 

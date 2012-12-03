@@ -24,9 +24,11 @@ function bindEventHandlers(control, events) {
 	/// </summary>
 	/// <param name="control">Instance of control to which bind events.</param>
 	/// <param name="events">Object containing map of events to bind.</param>
-	
+	if (!events)
+        return;
+
 	for (var event in events) {
-		control.bind(event, events[event])
+		control.bind(event, events[event]);
 	}
 }
 
@@ -38,7 +40,7 @@ function bindEnable(control, configuration) {
 	/// <param name="configuration">Configuration used for control's creation.</param>
 	
 	var enable = configuration.enable;
-	if (ko.isObservable(enable)) {
+	if (ko.isObservable(enable) || ko.isComputed(enable)) {
 		enable.subscribe(function (newValue) {
 			control.enable(newValue);
 		});

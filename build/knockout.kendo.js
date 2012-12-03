@@ -25,9 +25,11 @@ function bindEventHandlers(control, events) {
 	/// </summary>
 	/// <param name="control">Instance of control to which bind events.</param>
 	/// <param name="events">Object containing map of events to bind.</param>
-	
+	if (!events)
+        return;
+
 	for (var event in events) {
-		control.bind(event, events[event])
+		control.bind(event, events[event]);
 	}
 }
 
@@ -39,7 +41,7 @@ function bindEnable(control, configuration) {
 	/// <param name="configuration">Configuration used for control's creation.</param>
 	
 	var enable = configuration.enable;
-	if (ko.isObservable(enable)) {
+	if (ko.isObservable(enable) || ko.isComputed(enable)) {
 		enable.subscribe(function (newValue) {
 			control.enable(newValue);
 		});
@@ -90,6 +92,7 @@ ko.bindingHandlers.kendoAutoComplete = {
             dataSource: [],
             dataTextField: null,
             dataValueField: null,
+            delay: 200,
             enable: true,
             event: {},
             filter: "startswith",
@@ -108,6 +111,10 @@ ko.bindingHandlers.kendoAutoComplete = {
         var control = null;
         var controlDataSource = null;
         var setValue = function (value) {
+            if (!value || value == '') {
+                control.value(null);
+                return;
+            }
             var count = controlDataSource.total();
             for (var index = 0; index < count; index++) {
                 if (accessDataItemValue(controlDataSource.at(index)) == value) {
@@ -149,6 +156,9 @@ ko.bindingHandlers.kendoAutoComplete = {
         } else {
             // Assuming that this data source is native kendo data source.
             controlDataSource = configuration.dataSource;
+            controlDataSource.bind("requestEnd", function () {
+                setTimeout(function() { control.popup.open(); }, 0);
+            });
         }
 
 		var disposeAutoComplete = function (control) {
@@ -165,6 +175,7 @@ ko.bindingHandlers.kendoAutoComplete = {
         control = $element.kendoAutoComplete({
             dataSource: controlDataSource,
             dataTextField: configuration.dataTextField,
+            delay: configuration.delay,
             filter: configuration.filter,
             height: configuration.height,
             highlightFirst: configuration.highlightFirst,
@@ -199,6 +210,9 @@ ko.bindingHandlers.kendoAutoComplete = {
                     }
                 }
             });
+            configuration.value.subscribe(function (value) {
+                control.value(value);
+            });
         }
 
 		bindEventHandlers(control, configuration.event);
@@ -216,33 +230,19 @@ ko.bindingHandlers.kendoComboBox = {
         /// <param name="allBindingsAccessor"> A JavaScript function that you can call to get all the model properties bound to this DOM element. Like valueAccessor, call it without any parameters to get the current bound model properties.</param>
         /// <param name="viewModel">The view model object that was passed to ko.applyBindings. Inside a nested binding context, this parameter will be set to the current data item (e.g., inside a with: person binding, viewModel will be set to person).</param>
 
-        var configuration = $.extend({
-            animation: false,
-            css: {},
-            dataSource: [],
-            dataTextField: "",
-            dataValueField: "",
-            enable: true,
-            event: {},
-            filter: "startswith",
-            height: 200,
-            highLightFirst: true,
-            ignoreCase: true,
-			isBusy: null,
-            minLength: 1,
-            placeholder: "",
-            separator: "",
-            suggest: false,
-            value: null
-        }, valueAccessor());
+        var configuration = valueAccessor();
 
-        var accessDataItemText = configuration.dataTextField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataTextField]; };
-        var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
+        var accessDataItemText = !configuration.dataTextField
+                                 ? function (dataItem) { return dataItem; }
+                                 : function (dataItem) { return dataItem[configuration.dataTextField]; };
+        var accessDataItemValue = !configuration.dataValueField
+                                  ? function (dataItem) { return dataItem; }
+                                  : function (dataItem) { return dataItem[configuration.dataValueField]; };
         var control = null;
         var controlDataSource = null;
         var valueToSet = configuration.value;
         var rebindValue = function (value) {
-            value = value ? value : valueToSet
+            value = value ? value : valueToSet;
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
                 if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
@@ -299,37 +299,31 @@ ko.bindingHandlers.kendoComboBox = {
             controlDataSource = configuration.dataSource;
         }
 
-        control = $(element).kendoComboBox({
-            animation: configuration.animation,
-            dataSource: controlDataSource,
-            dataTextField: configuration.dataTextField,
-            filter: configuration.filter,
-            height: configuration.height,
-            highlightFirst: configuration.highlightFirst,
-            ignoreCase: configuration.ignoreCase,
-            minLength: configuration.minLength,
-            placeholder: configuration.placeholder,
-            separator: configuration.separator,
-            suggest: configuration.suggest
-        }).data("kendoComboBox");
+        configuration.dataSource = controlDataSource;
 
-		bindEnable(control, configuration);
+        if (configuration.enable != undefined && configuration.enable != null) {
+            configuration.enable = ko.utils.unwrapObservable(configuration.enable);
+        }
+
+        control = $(element).kendoComboBox($.extend({}, configuration, {
+            value: null
+        })).data("kendoComboBox");
+
+		//bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 		
         rebindValue();
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
             control.bind("select", function (e) {
-                if (!e) {
+                if (!e)
                     configuration.value(null);
-                }
 
                 configuration.value(e.item.index() == -1 ? null : accessDataItemValue(this.dataItem(e.item.index())));
             });
             control.bind("change", function (e) {
-                if (!e) {
+                if (!e)
                     configuration.value(null);
-                }
 
                 configuration.value(this.selectedIndex == -1 ? null : accessDataItemValue(this.dataItem(this.selectedIndex)));
             });
@@ -337,6 +331,14 @@ ko.bindingHandlers.kendoComboBox = {
 
         bindEventHandlers(control, configuration.event);
 		applyStyles($(control.element).parent(), configuration.css);
+    },
+    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var configuration = valueAccessor();
+        var control = $(element).data("kendoComboBox");
+
+        if (configuration.enable != undefined && configuration.enable != null) {
+            control.enable(ko.utils.unwrapObservable(configuration.enable));
+        }
     }
 };
 ko.bindingHandlers.kendoDropDownList = {
@@ -349,32 +351,16 @@ ko.bindingHandlers.kendoDropDownList = {
         /// <param name="allBindingsAccessor"> A JavaScript function that you can call to get all the model properties bound to this DOM element. Like valueAccessor, call it without any parameters to get the current bound model properties.</param>
         /// <param name="viewModel">The view model object that was passed to ko.applyBindings. Inside a nested binding context, this parameter will be set to the current data item (e.g., inside a with: person binding, viewModel will be set to person).</param>
 
-        var configuration = $.extend({
-            animation: false,
-            css: {},
-            dataSource: null,
-            dataTextField: null,
-            dataValueField: null,
-            delay: 500,
-            enable: true,
-            event: {},
-            height: 200,
-            ignoreCase: true,
-			isBusy: null,
-            index: 0,
-            optionLabel: "",
-            value: null
-        }, valueAccessor());
+        var configuration = valueAccessor();
 
-        var accessDataItemText = configuration.dataTextField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataTextField]; };
-        var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
+        var accessDataItemValue = !configuration.dataValueField ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
         var control = null;
         var controlDataSource = null;
         var valueToSet = configuration.value;
-        var rebindValue = null
+        var rebindValue = null;
 		if (configuration.dataSource) {
 			rebindValue = function (value) {
-				value = value ? value : valueToSet
+				value = value ? value : valueToSet;
 				var total = controlDataSource.total();
 				for (var itemIndex = 0; itemIndex < total; itemIndex++) {
 					if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
@@ -393,7 +379,7 @@ ko.bindingHandlers.kendoDropDownList = {
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
                 valueToSet.subscribe(function (value) {
-                    valueToSet = value
+                    valueToSet = value;
                     rebindValue();
                 });
                 valueToSet = valueToSet();
@@ -416,32 +402,16 @@ ko.bindingHandlers.kendoDropDownList = {
             controlDataSource = configuration.dataSource;
         }
 
-		if (controlDataSource) {
-			control = $(element).kendoDropDownList({
-				animation: configuration.animation,
-				dataSource: controlDataSource,
-				dataTextField: configuration.dataTextField,
-				dataValueField: configuration.dataValueField,
-				delay: configuration.delay,
-				height: configuration.height,
-				ignoreCase: configuration.ignoreCase,
-				index: configuration.index,
-				optionLabel: configuration.optionLabel
-			}).data("kendoDropDownList");
-			
-			rebindValue();
-		} else {
-			control = $(element).kendoDropDownList({
-				animation: configuration.animation,
-				delay: configuration.delay,
-				height: configuration.height,
-				ignoreCase: configuration.ignoreCase,
-				index: configuration.index,
-				optionLabel: configuration.optionLabel
-			}).data("kendoDropDownList");
-		}
+        if (controlDataSource)
+            configuration.dataSource = controlDataSource;
+        else if (configuration.dataSource)
+            delete configuration.dataSource;
 
-		bindEnable(control, configuration);
+        control = $(element).kendoDropDownList(configuration)
+                            .data("kendoDropDownList");
+        rebindValue();
+
+        bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
@@ -527,7 +497,7 @@ ko.bindingHandlers.kendoDatePicker = {
 			value: valueToSet
 		}).data("kendoDatePicker");
 		
-		if (kendo.support.touch) {
+		/*if (kendo.support.touch) {
 			var selector = "td:has(.k-link)";
 			var calendar = control.dateView.calendar;
 			calendar.element
@@ -545,7 +515,7 @@ ko.bindingHandlers.kendoDatePicker = {
 					.delegate(selector, "touchend", function (e) {
 						$(this).click();
 					});
-		}
+		}*/
 
 		bindEnable(control, configuration);
 
@@ -556,7 +526,10 @@ ko.bindingHandlers.kendoDatePicker = {
 				}
 				var value = this.value();
 				var previousValue = configuration.value();
-				configuration.value(new Date(value.getFullYear(), value.getMonth(), value.getDate(),
+				if (value == null)
+					configuration.value(null)
+				else
+					configuration.value(new Date(value.getFullYear(), value.getMonth(), value.getDate(),
 									previousValue ? previousValue.getHours() : 0, previousValue ? previousValue.getMinutes() : 0, previousValue ? previousValue.getSeconds() : 0));
 			});
 		}

@@ -8,32 +8,16 @@ ko.bindingHandlers.kendoDropDownList = {
         /// <param name="allBindingsAccessor"> A JavaScript function that you can call to get all the model properties bound to this DOM element. Like valueAccessor, call it without any parameters to get the current bound model properties.</param>
         /// <param name="viewModel">The view model object that was passed to ko.applyBindings. Inside a nested binding context, this parameter will be set to the current data item (e.g., inside a with: person binding, viewModel will be set to person).</param>
 
-        var configuration = $.extend({
-            animation: false,
-            css: {},
-            dataSource: null,
-            dataTextField: null,
-            dataValueField: null,
-            delay: 500,
-            enable: true,
-            event: {},
-            height: 200,
-            ignoreCase: true,
-			isBusy: null,
-            index: 0,
-            optionLabel: "",
-            value: null
-        }, valueAccessor());
+        var configuration = valueAccessor();
 
-        var accessDataItemText = configuration.dataTextField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataTextField]; };
-        var accessDataItemValue = configuration.dataValueField == null ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
+        var accessDataItemValue = !configuration.dataValueField ? function (dataItem) { return dataItem; } : function (dataItem) { return dataItem[configuration.dataValueField]; };
         var control = null;
         var controlDataSource = null;
         var valueToSet = configuration.value;
-        var rebindValue = null
+        var rebindValue = null;
 		if (configuration.dataSource) {
 			rebindValue = function (value) {
-				value = value ? value : valueToSet
+				value = value ? value : valueToSet;
 				var total = controlDataSource.total();
 				for (var itemIndex = 0; itemIndex < total; itemIndex++) {
 					if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
@@ -52,7 +36,7 @@ ko.bindingHandlers.kendoDropDownList = {
         if (valueToSet != null) {
             if (ko.isObservable(valueToSet)) {
                 valueToSet.subscribe(function (value) {
-                    valueToSet = value
+                    valueToSet = value;
                     rebindValue();
                 });
                 valueToSet = valueToSet();
@@ -75,32 +59,16 @@ ko.bindingHandlers.kendoDropDownList = {
             controlDataSource = configuration.dataSource;
         }
 
-		if (controlDataSource) {
-			control = $(element).kendoDropDownList({
-				animation: configuration.animation,
-				dataSource: controlDataSource,
-				dataTextField: configuration.dataTextField,
-				dataValueField: configuration.dataValueField,
-				delay: configuration.delay,
-				height: configuration.height,
-				ignoreCase: configuration.ignoreCase,
-				index: configuration.index,
-				optionLabel: configuration.optionLabel
-			}).data("kendoDropDownList");
-			
-			rebindValue();
-		} else {
-			control = $(element).kendoDropDownList({
-				animation: configuration.animation,
-				delay: configuration.delay,
-				height: configuration.height,
-				ignoreCase: configuration.ignoreCase,
-				index: configuration.index,
-				optionLabel: configuration.optionLabel
-			}).data("kendoDropDownList");
-		}
+        if (controlDataSource)
+            configuration.dataSource = controlDataSource;
+        else if (configuration.dataSource)
+            delete configuration.dataSource;
 
-		bindEnable(control, configuration);
+        control = $(element).kendoDropDownList(configuration)
+                            .data("kendoDropDownList");
+        rebindValue();
+
+        bindEnable(control, configuration);
 		bindIsBusy(control, configuration);
 
         if (configuration.value != null && ko.isObservable(configuration.value)) {
