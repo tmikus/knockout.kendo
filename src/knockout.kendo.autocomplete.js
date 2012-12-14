@@ -70,7 +70,8 @@ ko.bindingHandlers.kendoAutoComplete = {
                 for (var index = 0; index < value.length; index++) {
                     controlDataSource.add(value[index]);
                 }
-                setValue(valueToSet);
+                if(!(value.length == 1 && accessDataItemText(value[0]) == control.value()))
+                    control.popup.open();
                 control.popup.open();
             });
         } else if ($.isArray(configuration.dataSource)) {
