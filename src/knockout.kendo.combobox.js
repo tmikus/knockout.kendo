@@ -65,6 +65,8 @@ ko.bindingHandlers.kendoComboBox = {
             controlDataSource = new kendo.data.DataSource({ data: unwrapDataSource(configuration.dataSource()) });
             configuration.dataSource.subscribe(function (value) {
                 controlDataSource.cancelChanges();
+                control.value(null)
+                controlDataSource.data([]);
                 var dataArray = unwrapDataSource(value);
 				for (var index = 0; index < dataArray.length; index++) {
 					controlDataSource.add(dataArray[index]);
