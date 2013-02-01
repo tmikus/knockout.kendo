@@ -24,7 +24,8 @@ ko.bindingHandlers.kendoComboBox = {
             value = value ? value : valueToSet;
             var total = controlDataSource.total();
             for (var itemIndex = 0; itemIndex < total; itemIndex++) {
-                if (accessDataItemValue(controlDataSource.at(itemIndex)) == value) {
+                var item = controlDataSource.at(itemIndex)
+                if (item && accessDataItemValue(item) == value) {
                     control.value(controlDataSource.at(itemIndex));
                     control.text(accessDataItemText(controlDataSource.at(itemIndex)));
                     return;
